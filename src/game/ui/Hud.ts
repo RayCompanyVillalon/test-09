@@ -10,6 +10,7 @@ export class Hud {
   private readonly healthFill = mustGet<HTMLElement>('health-fill');
   private readonly healthValue = mustGet<HTMLElement>('health-value');
   private readonly toastEl = mustGet<HTMLElement>('toast');
+  private readonly victoryEl = mustGet<HTMLElement>('victory');
   private readonly flashEl = mustGet<HTMLElement>('flash');
   private readonly debugEl = mustGet<HTMLElement>('debug');
   private readonly debugBody = mustGet<HTMLElement>('debug-body');
@@ -75,33 +76,8 @@ export class Hud {
     this.toastTimer = setTimeout(() => { this.toastEl.classList.remove('show'); this.toastTimer = null; }, 1550);
   }
 
-  /** Reveal / update the boss health bar. */
-  setBoss(name: string, health: number, maxHealth: number): void {
-    const percent = Math.max(0, Math.min(100, Math.round((health / maxHealth) * 100)));
-    if (percent !== this.bossPercent) {
-      this.bossPercent = percent;
-      this.bossName.textContent = name;
-      this.bossValue.textContent = `${percent}%`;
-      this.bossFill.style.width = `${percent}%`;
-      this.bossFill.style.background = percent > 50
-        ? 'linear-gradient(90deg, #6a2018, #c8503a)'
-        : percent > 25
-          ? 'linear-gradient(90deg, #8a2a14, #e06a2a)'
-          : 'linear-gradient(90deg, #a02010, #ff3a20)';
-    }
-
-    if (this.bossPanel.hidden) {
-      this.bossPanel.hidden = false;
-      void this.bossPanel.offsetWidth;
-    }
-    this.bossPanel.classList.add('show');
-  }
-
-  hideBoss(): void {
-    if (this.bossPanel.hidden) return;
-    this.bossPanel.classList.remove('show');
-    this.bossPanel.hidden = true;
-    this.bossPercent = -1;
+  showVictory(): void {
+    this.victoryEl.hidden = false;
   }
 
   flash(): void {

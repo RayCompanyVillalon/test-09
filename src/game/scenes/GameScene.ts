@@ -67,6 +67,7 @@ export class GameScene extends Scene {
   private debugTimer = 0;
   private hitstop = 0;
   private deathTimer = 0;
+  private won = false;
   private debug = false;
 
   // Pickups
@@ -147,6 +148,16 @@ export class GameScene extends Scene {
       return;
     }
 
+    if (this.won) {
+      this.time += dt;
+      this.updateCamera(dt);
+      this.background.update(this.camera.pos);
+      this.particles.update(dt);
+      this.updateSpears(dt);
+      this.updateHud(dt);
+      return;
+    }
+
     this.time += dt;
 
     // --- Camera follows player (no auto-scroll) ---
@@ -167,6 +178,10 @@ export class GameScene extends Scene {
 
     this.resolvePlayerAttack();
     this.updateEnemies(dt);
+
+    if (!this.won && !this.controller.isDead && this.controller.body.x >= ROOM.endX) {
+      this.triggerVictory();
+    }
 
     if (!this.controller.isDead) {
       this.checkFall();
@@ -528,6 +543,13 @@ export class GameScene extends Scene {
     if (this.controller.isDead) this.beginDeath();
   }
 
+  private triggerVictory(): void {
+    this.won = true;
+    this.hud.showVictory();
+    this.hud.toast('THE PATH IS CLEARED');
+    this.camera.shake(3, 2, 200);
+  }
+
   private beginDeath(): void {
     this.deathTimer = 1.0;
     this.hud.toast('FALLEN', 'red');
@@ -579,15 +601,25 @@ export class GameScene extends Scene {
   }
 
   private respawnFall(): void {
-    const respawnX = this.controller.body.x;
-    const respawnY = 540;
-    this.controller.teleport(respawnX, respawnY);
-    this.controller.invulnerable = 0.8;
-    this.hitstop = 0;
+    // Falling into a pit always costs vigor, even during i-frames.
+    const lethal = this.controller.applyFallDamage(COMBAT.fallDamage);
+    this.hud.update(this.mettle, this.controller);
     this.hud.flash();
-    this.hud.toast('WATCH YOUR STEP', 'red');
     this.sfx.playerHurt();
-    this.particles.landDust(respawnX + 16, respawnY + 56, 700);
+
+    // Return to the last spot the player was standing safely (never mid-pit).
+    const { x, y } = this.controller.lastSafe;
+    this.controller.respawnAt(x, y);
+    this.hitstop = 0;
+    this.particles.landDust(x + 16, y + 56, 700);
+
+    if (lethal) {
+      this.beginDeath();
+      return;
+    }
+
+    this.controller.invulnerable = 0.8;
+    this.hud.toast('WATCH YOUR STEP', 'red');
   }
 
   private updateHud(dt: number): void {

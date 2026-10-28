@@ -93,6 +93,9 @@ export const COMBAT = {
   playerAttackMoveMul: 0.3,
   playerHurtHitstop: 0.06,
 
+  /** Damage taken from falling into a pit (respawn is at last safe ground). */
+  fallDamage: 20,
+
   /** Parry */
   parryWindow: 0.12,
   parryStunEnemy: 0.6,

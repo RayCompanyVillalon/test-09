@@ -80,8 +80,8 @@ export const ROOM: RoomData = {
 
     // === Second gap over sunken graves ===
     { x: 2100, y: 620, w: 400, h: 100, kind: 'stone' },
-    // Mid-gap crumbling pillar
-    { x: 2250, y: 540, w: 40, h: 80, kind: 'stone' },
+    // Mid-gap crumbling pillar (stepping stone across the gap)
+    { x: 1980, y: 540, w: 40, h: 80, kind: 'stone' },
 
     // === Mausoleum ruins — multi-level ===
     { x: 2650, y: 640, w: 600, h: 80, kind: 'stone' },

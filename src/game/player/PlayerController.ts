@@ -54,6 +54,8 @@ export class PlayerController {
   time = 0;
   runPhase = 0;
   standingOnOneWay = false;
+  /** Last position where the player stood on solid ground (pit respawn point). */
+  lastSafe: { x: number; y: number };
 
   // Crouch / slide
   crouching = false;
@@ -93,6 +95,7 @@ export class PlayerController {
       onGround: false,
       standingOnOneWay: false,
     };
+    this.lastSafe = { x, y };
   }
 
   get stateName(): PlayerStateName {
@@ -341,6 +344,10 @@ export class PlayerController {
     });
     this.standingOnOneWay = this.body.standingOnOneWay;
 
+    if (this.body.onGround) {
+      this.lastSafe = { x: this.body.x, y: this.body.y };
+    }
+
     if (!wasOnGround && this.body.onGround) {
       events.push({ type: 'land', impact: Math.abs(fallSpeed) });
     }
@@ -390,6 +397,17 @@ export class PlayerController {
     this.health = Math.min(this.maxHealth, this.health + amount);
   }
 
+  /**
+   * Damage from falling into a pit. Unlike takeDamage this ignores i-frames and
+   * applies no knockback or stun — the fall itself already moved the player.
+   * Returns true when the hit was lethal.
+   */
+  applyFallDamage(amount: number): boolean {
+    if (this.isDead || amount <= 0) return false;
+    this.health = Math.max(0, this.health - amount);
+    return this.isDead;
+  }
+
   resetCombat(): void {
     this.health = this.maxHealth;
     this.invulnerable = 0;
@@ -421,6 +439,30 @@ export class PlayerController {
     this.currentWeapon = 'sword';
     this.spearCharges = 0;
     this.spearThrowing = false;
+  }
+
+  /**
+   * Reposition after a pit fall: resets movement/combat state but keeps the
+   * player's equipped weapon (unlike teleport).
+   */
+  respawnAt(x: number, y: number): void {
+    this.body.x = x;
+    this.body.y = y;
+    this.body.vx = 0;
+    this.body.vy = 0;
+    this.body.onGround = false;
+    this.body.standingOnOneWay = false;
+    this.standingOnOneWay = false;
+    this.coyote = 0;
+    this.jumpBuffer = 0;
+    this.rollTime = 0;
+    this.rollCooldown = 0;
+    this.crouching = false;
+    this.slideTime = 0;
+    this.isParrying = false;
+    this.parryActive = false;
+    this.stun = 0;
+    this.cancelAttack();
   }
 
   equipWeapon(weapon: WeaponType): void {

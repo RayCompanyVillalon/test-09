@@ -363,6 +363,50 @@ body {
   color: #e0b8a0;
 }
 
+/* ---------- victory ---------- */
+
+.victory {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  padding: 26px 44px;
+  border: 1px solid rgba(180, 120, 80, 0.4);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(10, 14, 19, 0.92), rgba(5, 8, 11, 0.88));
+  text-align: center;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7);
+  animation: victory-in 700ms ease-out;
+}
+
+.victory[hidden] {
+  display: none;
+}
+
+.victory h2 {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(20px, 2.6vw, 38px);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: #e0c89a;
+  text-shadow: 0 2px 18px rgba(200, 120, 60, 0.45);
+}
+
+.victory p {
+  margin: 12px 0 0;
+  font-size: clamp(9px, 0.85vw, 12px);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(212, 196, 168, 0.6);
+}
+
+@keyframes victory-in {
+  0% { opacity: 0; transform: translate(-50%, -46%); }
+  100% { opacity: 1; transform: translate(-50%, -50%); }
+}
+
 /* ---------- controls ---------- */
 
 .controls {
