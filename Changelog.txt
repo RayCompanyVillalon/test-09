@@ -1,0 +1,16 @@
+Changelog Test - 09  
+
+Version .2
+
+
+Pits not hurting players fixed
+New enemies
+The level is now beatable 
+
+Fixed enemy spawning
+Revisited the Boss Fight Encounter
+Provided a model for the Moth Man
+Fixed the map geometry so that way the level is easier to traverse.
+
+
+
